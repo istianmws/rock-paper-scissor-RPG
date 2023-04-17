@@ -18,14 +18,15 @@ public class Character : MonoBehaviour
     [SerializeField] Image healthBar;
     [SerializeField] TMP_Text hpText;
     [SerializeField] Button button;
-
+    private Vector3 initialPosition; 
     public Button Button { get => button; }
-    public CharacterType Type { get => type; set => type = value; }
-    public int AttackPower { get => attackPower; set => attackPower = value; }
-    public int CurrentHP { get => CurrentHP1; set => CurrentHP1 = value; }
-    public int CurrentHP1 { get => currentHP; set => currentHP = value; }
-
+    public CharacterType Type { get => type; }
+    public int AttackPower { get => attackPower; }
+    public int CurrentHP { get => currentHP; }
+    public Vector3 InitialPosition { get => initialPosition;}
+    public int MaxHP { get => maxHP; }
     private void Start() {
+        initialPosition = this.transform.position;
         overHeadText.text = name;
         nameText.text = name;
         typeText.text = Type.ToString();
@@ -35,14 +36,14 @@ public class Character : MonoBehaviour
 
     public void ChangeHP(int amount)
     {
-        CurrentHP1 += amount;
-        CurrentHP1 = Mathf.Clamp(CurrentHP1,0, maxHP);
+        currentHP += amount;
+        currentHP = Mathf.Clamp(CurrentHP,0, MaxHP);
         UpdateHpUI();
     }
 
     private void UpdateHpUI()
     {
-        healthBar.fillAmount = (float) CurrentHP1 / (float)maxHP;
-        hpText.text = CurrentHP1 + "/" + maxHP;
+        healthBar.fillAmount = (float) CurrentHP / (float)MaxHP;
+        hpText.text = CurrentHP + "/" + MaxHP;
     }
 }

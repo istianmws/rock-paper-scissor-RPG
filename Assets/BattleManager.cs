@@ -1,17 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BattleManager : MonoBehaviour
 {
     [SerializeField] State state;
+    [SerializeField] GameObject battleResult;
+    [SerializeField] TMP_Text battleResultText;
     [SerializeField] Player player1;
     [SerializeField] Player player2;
-
-    //temp
-    [SerializeField] bool isReturningDone;
-    [SerializeField] bool isPlayerEliminated;
 
     enum State
     {
@@ -72,14 +72,7 @@ public class BattleManager : MonoBehaviour
                     loser.TakeDamage(winner.SelectedCharacter.AttackPower);
                 }
 
-                if (player1.SelectedCharacter.CurrentHP==0)
-                {
-                    player1.Remove(player1.SelectedCharacter);
-                }
-                if (player2.SelectedCharacter.CurrentHP==0)
-                {
-                    player2.Remove(player2.SelectedCharacter);
-                }
+                
                 // start damage animation
                 state = State.Damaging;
             }
@@ -87,22 +80,54 @@ public class BattleManager : MonoBehaviour
                 break;
             case State.Damaging:
                 if(player1.isDamaging() == false && player2.isDamaging() == false){
-                    // check is there char die?
+                    if (player1.SelectedCharacter.CurrentHP == 0)
+                    {
+                        player1.Remove(player1.SelectedCharacter);
+                    }
+
+                    if (player2.SelectedCharacter.CurrentHP == 0)
+                    {
+                        player2.Remove(player2.SelectedCharacter);
+                    }
+                    
+                    if (player1.SelectedCharacter != null)
+                        player1.Return();
+                    
+                    if (player2.SelectedCharacter != null)
+                        player2.Return();
                     state = State.Returning;
                 }
                 break;
             case State.Returning:
-                if(isReturningDone){
+                if(player1.IsReturning() == false && player2.IsReturning() == false){
                     //check player char counts
-                    if(isPlayerEliminated){
+                    if(player1.CharacterList.Count == 0 && player2.CharacterList.Count == 0)
+                    {
+                        battleResult.SetActive(true);
+                        battleResultText.text = "Battle Is OVER!\n==DRAW==";     
+                        
                         state = State.BattleOver;
-                    }else{
+                    }
+                    else if(player2.CharacterList.Count == 0)
+                    {
+                        battleResult.SetActive(true);
+                        battleResultText.text = "Battle Is OVER!\n==Player WIN==";
+
+                    }
+                    else if(player1.CharacterList.Count == 0)
+                    {
+                        battleResult.SetActive(true);
+                        battleResultText.text = "Battle Is OVER!\n==Enemy WIN==";
+
+                    }
+                    else
+                    {
                         state = State.Preparation;
                     }
                 }
                 break;
             case State.BattleOver:
-            
+                Debug.Log("===Battle Over===\nPayer1 : "+player1.CharacterList.Count + "\nPayer2 : "+player2.CharacterList.Count);
                 break;
         }
     }
@@ -149,4 +174,13 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    public void Replay()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void Quit()
+    {
+        SceneManager.LoadScene("Main");
+    }
 }
