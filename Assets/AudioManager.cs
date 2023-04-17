@@ -11,8 +11,9 @@ public class AudioManager : MonoBehaviour
     public bool IsMute{get=> bgm.mute;}
     public float BgmVolume{get=> bgm.volume;}
     public float SfxVolume{get=> sfx.volume;}
-    
-    
+    private float bgmVolumeBeforeQuit;
+    private float sfxVolumeBeforeQuit;
+    private bool muteValue;
 
     private void Start() {
         if(bgmInstance != null)
@@ -37,8 +38,28 @@ public class AudioManager : MonoBehaviour
             sfx.transform.SetParent(null);
             DontDestroyOnLoad(sfx.gameObject);
         }
-        
+
+        //mengambil nilai sfx dan bgm sebelumnya dari playerprefs
+        bgmVolumeBeforeQuit = PlayerPrefs.GetFloat("bgmVolume");
+        sfxVolumeBeforeQuit = PlayerPrefs.GetFloat("sfxVolume");
+        muteValue = PlayerPrefs.GetInt("soundMute", 0) == 1;
+
+        //mengatur nilai sfx dan bgm sebelumnya (jika ada) ke audio manager
+        if (bgmVolumeBeforeQuit >= 0f)
+        {
+            bgm.volume = bgmVolumeBeforeQuit;
+        }
+        if (sfxVolumeBeforeQuit >= 0f)
+        {
+            sfx.volume = sfxVolumeBeforeQuit;
+        }
+        if (muteValue)
+        {
+            bgm.mute = muteValue;
+            sfx.mute = muteValue;
+        }
     }
+
     public void PlayBGM(AudioClip clip, bool loop = true)
     {
         if (bgm.isPlaying)
@@ -60,13 +81,17 @@ public class AudioManager : MonoBehaviour
     {
         bgm.mute = value;
         sfx.mute = value;
+        int muteValue = value? 1:0;
+        PlayerPrefs.SetInt("soundMute", muteValue);
     }
     public void SetBgmVolume(float value)
     {
         bgm.volume = value;
+        PlayerPrefs.SetFloat("bgmVolume", bgm.volume);
     }
     public void SetSfxVolume(float value)
     {
         sfx.volume = value;
+        PlayerPrefs.SetFloat("sfxVolume", sfx.volume);
     }
 }
