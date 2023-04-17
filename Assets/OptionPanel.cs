@@ -15,11 +15,14 @@ public class OptionPanel : MonoBehaviour
 
     private void Start()
     {
-        muteToggle.isOn = audioManager.IsMute;    
-        bgmSlider.value = audioManager.BgmVolume;
-        sfxSlider.value = audioManager.SfxVolume;
-        SetBgmVolText(bgmSlider.value);
-        SetSfxVolText(sfxSlider.value);
+        if (audioManager != null)
+        {
+            muteToggle.isOn = audioManager.IsMute;    
+            bgmSlider.value = audioManager.BgmVolume;
+            sfxSlider.value = audioManager.SfxVolume;
+            SetBgmVolText(bgmSlider.value);
+            SetSfxVolText(sfxSlider.value);
+        }
     }
 
     public void SetBgmVolText(float value)
